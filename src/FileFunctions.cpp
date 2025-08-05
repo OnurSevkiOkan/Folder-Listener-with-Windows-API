@@ -8,7 +8,6 @@ void FileManagement::CreateFolder() { // Creates a folder in appdata
     wchar_t localAppData[MAX_PATH];
 
     if (GetEnvironmentVariable(L"LOCALAPPDATA", localAppData, MAX_PATH) == 0) {
-        // Error handling if the environment variable is not found
         std::cout << "Error: %LOCALAPPDATA% environment variable not found.\n";
         return;
     }
@@ -23,7 +22,6 @@ void FileManagement::CreateFolder() { // Creates a folder in appdata
     );
 
     if (createDir == FALSE) {
-        // Error handling if directory creation fails
         DWORD error = GetLastError();
         if (error == ERROR_ALREADY_EXISTS) {
             std::cout << "Folder already exists.\n";
@@ -43,9 +41,7 @@ std::wstring FileManagement::GetAppdataFolderPath() const {
 }
 
 std::wstring FileManagement::GetDownloadsFolderPath() const { // Gets the download path of user
-    // Initialize COM
     if (FAILED(CoInitialize(NULL))) {
-        // Error handling
         std::cerr << "Failed to initialize COM." << std::endl;
         return L"";
     }
@@ -56,25 +52,19 @@ std::wstring FileManagement::GetDownloadsFolderPath() const { // Gets the downlo
     // Get the path to the Downloads folder
     HRESULT result = SHGetKnownFolderPath(FOLDERID_Downloads, 0, NULL, &path);
     if (FAILED(result)) {
-        // Error handling
         std::cerr << "Failed to get Downloads folder path. Error code: " << result << std::endl;
-        CoUninitialize(); // Uninitialize COM
+        CoUninitialize(); 
         return L"";
     }
 
     // Convert the path to std::wstring
     std::wstring downloadsPath = path;
-
-    // Free the allocated memory
     CoTaskMemFree(path);
-
-    // Uninitialize COM
     CoUninitialize();
 
     return downloadsPath;
 }
 
-// C:\Users\onurs\Downloads
 void FileManagement::createListener(const wchar_t* directory)
 {
     HANDLE hDirectory = CreateFile(directory,
@@ -110,7 +100,6 @@ void FileManagement::createListener(const wchar_t* directory)
             break;
         }
 
-        // Process the changes in buffer
         // Just prints the changes
         std::cout << "Changes detected:" << std::endl;
         FILE_NOTIFY_INFORMATION* fileInfo = reinterpret_cast<FILE_NOTIFY_INFORMATION*>(buffer);
@@ -132,4 +121,5 @@ void FileManagement::createListener(const wchar_t* directory)
     }
 
     CloseHandle(hDirectory);
+
 }
